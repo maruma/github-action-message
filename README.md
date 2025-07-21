@@ -1,0 +1,1 @@
+# Github Actions を使ったシェル等の実行結果送信
