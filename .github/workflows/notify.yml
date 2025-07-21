@@ -1,0 +1,26 @@
+name: Daily Hello To Slack
+
+on:
+  schedule:
+    - cron: "0 11 * * *" # 毎日9時に実行
+  workflow_dispatch:
+
+jobs:
+  send_hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run script and capture output
+        id: run_script
+        run: |
+          chmod +x hello.sh
+          OUTPUT=$(./hello.sh)
+          echo "output=$OUTPUT" >> "$GITHUB_OUTPUT"
+
+      - name: Send Hello to Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\": \"$(echo ${{ steps.run_script.outputs.output }})\"}" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
